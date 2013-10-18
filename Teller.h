@@ -12,6 +12,11 @@ class Teller {
 public:
 	Teller();
 	virtual ~Teller();
+    
+    void HelpCustomer() {
+        
+    }
+    
 };
 
 #endif /* TELLER_H_ */
