@@ -1,17 +1,17 @@
 /*
- * BlockingQueue.cpp
+ * Bank.cpp
  *
  *  Created on: Oct 16, 2013
  *      Author: cbr4830
  */
 
-#include "ConcurrentQueue.h"
+#include "Bank.h"
 
-BlockingQueue::BlockingQueue() {
+Bank::Bank() {
 	// TODO Auto-generated constructor stub
 
 }
 
-BlockingQueue::~BlockingQueue() {
+Bank::~Bank() {
 	// TODO Auto-generated destructor stub
 }
