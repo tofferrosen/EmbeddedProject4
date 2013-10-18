@@ -13,3 +13,4 @@
 *.a
 
 Project4.xcodeproj
+.DS_Store
