@@ -12,12 +12,15 @@
 
 class Customer {
 public:
-	Customer();
+	Customer(int);
 	virtual ~Customer();
+	setTellerTime(int);
+	setCustomerDone(int);
 
 private:
-	int timeSpentInQeue;
-	int timeWithTeller;
+	int bankEnterTime;
+	int tellerServiceTime;
+	int tellerDoneTime;
 };
 
 #endif /* CUSTOMER_H_ */

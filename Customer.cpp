@@ -8,11 +8,16 @@
 
 #include "Customer.h"
 
-Customer::Customer() {
-	// TODO Auto-generated constructor stub
-
+Customer::Customer(int curTime) {
+	bankEnterTime = curTime;
+}
+Customer::setTellerTime(int tTime){
+	tellerServiceTime = tTime;
 }
 
-Customer::~Customer() {
-	// TODO Auto-generated destructor stub
+Customer::setCustomerDone(int dTime){
+	tellerDoneTime = dTime;
 }
+
+
+Customer::~Customer() {}
