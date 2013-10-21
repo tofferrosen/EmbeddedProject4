@@ -8,14 +8,18 @@
 #ifndef TELLER_H_
 #define TELLER_H_
 
+#include <vector>
+
 class Teller {
 public:
-	Teller();
+	Teller(Queue queue); // Constructor
 	virtual ~Teller();
     
-    void HelpCustomer() {
-        
-    }
+    void HelpCustomer();
+
+private:
+    int maxWaitTime; // max time waiting on a customer for metrics
+    vector timesWithCustomers; // vector of times spent with customers metrics
     
 };
 

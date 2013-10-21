@@ -26,6 +26,7 @@ public:
     
     Customer pop();
     void enqueue(Customer *customer);
+    bool empty();
     
 private:
     

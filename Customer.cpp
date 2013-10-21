@@ -1,5 +1,6 @@
 /*
  * Customer.cpp
+ * Customer holds metrics about itself
  *
  *  Created on: Oct 16, 2013
  *      Author: cbr4830
