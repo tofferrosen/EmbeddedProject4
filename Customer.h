@@ -14,9 +14,11 @@ class Customer {
 public:
 	Customer(int);
 	virtual ~Customer();
-	setTellerTime(int);
-	setCustomerDone(int);
-
+	void setTellerTime(int);
+	void setCustomerDone(int);
+	int getWaitTime(void);
+	int getServiceTime(void);
+	
 private:
 	int bankEnterTime;
 	int tellerServiceTime;
