@@ -55,6 +55,8 @@ void Teller::helpCustomers(){
     		time(&timer);
     		currentTime = difftime(timer,mktime(&y2k));
     	}
+    	delete(&customer);
+    	// we are done with customer - deallocate
     }
 
     done = true; // bank is closed and the customer queue is empty.

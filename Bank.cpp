@@ -84,5 +84,14 @@ void Bank::closeBank(){
 }
 
 Bank::~Bank() {
-	// TODO Auto-generated destructor stub
+	// delete the tellers
+	for(int i = 0; i < numOfTellers; i++){
+		delete(tellers[i]);
+	}
+	// delete the array
+	delete(tellers);
+
+	// delete the customer queue
+	delete(customerQueue);
+
 }
