@@ -23,6 +23,7 @@ public:
 	void closeBank();
 	void timerDecrementer();
 	void runTimer();
+	void stopTimer();
 
 
 private:
@@ -31,7 +32,8 @@ private:
 	Teller* tellers[numOfTellers];
 	Queue* customerQueue;
 	bool open;
-	pthread_t timer;
+	bool timerOn;
+	pthread_t thread;
 
 
 };

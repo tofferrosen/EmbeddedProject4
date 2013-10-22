@@ -25,13 +25,13 @@ public:
     Queue();
     virtual ~Queue();
     
-    Customer pop();
+    Customer * pop();
     void enqueue(Customer *customer);
     bool empty();
     
 private:
     
-    std::deque<Customer> container; //contains customers
+    std::deque<Customer *> container; //contains customers
     pthread_mutex_t mutex;
     
 };

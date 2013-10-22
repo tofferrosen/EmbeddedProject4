@@ -11,7 +11,7 @@
 
 #include <Bank.h>
 
-static unsigned int bankOpenSec = 420;
+static int bankOpenSec = 420;
 
 /**
  * Constructor
@@ -22,7 +22,7 @@ Bank::Bank() {
 
 	// instantiate the tellers
 	for(int i = 0; i < numOfTellers; i++){
-		tellers[i] = new Teller(customerQueue);
+		tellers[i] = new Teller(customerQueue,i+1);
 	}
 }
 
@@ -31,7 +31,8 @@ Bank::Bank() {
  * Starts running the timer
  */
 void Bank::runTimer(){
-	pthread_create(&timer, NULL, TimerThreadFunc, this);
+	timerOn = true;
+	pthread_create(&thread, NULL, TimerThreadFunc, this);
 }
 
 /**
@@ -39,8 +40,8 @@ void Bank::runTimer(){
  * adds customers to queue.
  */
 void Bank::openAndRunBank(){
-	time_t timer;
-	time_t start = clock();
+
+	printf("This fabulous bank has opened!\n");
 
 	// Open for business! Put the tellers to work
 	for(int i = 0; i < numOfTellers; i++){
@@ -49,33 +50,38 @@ void Bank::openAndRunBank(){
 	}
 
 	runTimer(); // start the timer
-
-	timer = clock();
-	printf("Start time is: %d\n", difftime(start,timer));
 	while(bankOpenSec > 0){
 
 		int newCustomerEntryTime = (rand()%(240-60))+60; // random # between 1 to 4 minutes in seconds
 		usleep(newCustomerEntryTime*1000);
+		printf("     GLOBAL TIME: %d\n", bankOpenSec);
 
 		// Add customer to queue!!
 		customerQueue->enqueue(new Customer(clock()));;
 	}
 
+	printf("     AFTER WHILE\n");
 	closeBank();
 }
 
+void Bank::stopTimer(){
+	timerOn = false;
+	pthread_join(thread,NULL);
+}
+
 /**
- * Open the bank
+ * Close the bank
  */
 void Bank::closeBank(){
 
-	// Open for business! Put the tellers to work
 	for(int i = 0; i < numOfTellers; i++){
 		Teller *teller = tellers[i];
 		teller->stopWorking();
 	}
 
-	printf("\nThe bank has closed");
+	printf("Closing timer\n");
+	stopTimer();
+	printf("The bank has closed, we apologize for the inconvenience!");
 }
 
 /*
@@ -83,8 +89,9 @@ void Bank::closeBank(){
  */
 void Bank::timerDecrementer(){
 
-	while(true){
+	while(timerOn == true){
 		usleep(100000);
+		//usleep(10000);
 		bankOpenSec--;
 	}
 }

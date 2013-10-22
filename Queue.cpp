@@ -20,11 +20,11 @@ Queue::~Queue() {
 }
 
 /**
- * Pops and returns first element in the queue.
- * IF the queue is empty, returns null.
+ * Pops and returns pointer to first element in the queue.
+ * IF the queue is empty, returns null ptr.
  */
-Customer Queue::pop() {
-	Customer customer;
+Customer * Queue::pop() {
+	Customer *customer;
 
     // aquire lock mutex
     while(pthread_mutex_trylock(&mutex) != 0){
@@ -35,8 +35,9 @@ Customer Queue::pop() {
 	if (container.empty()){
 		customer = NULL;
 	} else {
-		Customer customer = container.front();
-		printf("pop from the queue\n");
+		customer = container.front();
+		printf("                       pop from the queue\n");
+		printf("                       Size is now: %d\n", container.size());
 		container.pop_front();
 	}
 
@@ -67,7 +68,7 @@ void Queue::enqueue(Customer *customer){
 	while(pthread_mutex_trylock(&mutex) != 0){
 		usleep(100); // to not lock CPU
 	}
-	printf("Add to queue\n");
-    container.push_back(*customer);
+	printf("A new customer has entered!\n");
+    container.push_back(customer);
     pthread_mutex_unlock(&mutex);
 }

@@ -18,7 +18,7 @@
 
 class Teller {
 public:
-	Teller(Queue* queue); // Constructor
+	Teller(Queue* queue, int tellerNumber); // Constructor
 	virtual ~Teller();
     void startWorking();
     void stopWorking();
@@ -28,11 +28,12 @@ protected:
     void helpCustomers();
 
 private:
-    static void * InternalThreadEntryFunc(void * This) {((Teller *)This)->helpCustomers(); return NULL;}
-    pthread_t _thread;
+    static void * TellerRunFunction(void * This) {((Teller *)This)->helpCustomers(); return NULL;}
+    pthread_t thread;
     Queue *customerQueue;
     bool open;
     bool done;
+    int tellerNum;
     
 };
 

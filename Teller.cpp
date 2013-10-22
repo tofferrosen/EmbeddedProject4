@@ -16,8 +16,9 @@
 * Constructor
 * Sets the customer queue
 */
-Teller::Teller(Queue* queue) {
+Teller::Teller(Queue* queue, int tellerNumber) {
 	customerQueue = queue;
+	tellerNum = tellerNumber;
 }
 
 Teller::~Teller() {
@@ -32,24 +33,27 @@ Teller::~Teller() {
  * transaction.
  */
 void Teller::helpCustomers(){
-	Customer customer;
+	Customer *customer;
 	int timeReq;
 
 	printf("Teller ready!");
 
-
 	while(open || !customerQueue->empty()){
 		customer = customerQueue->pop(); // get the next customer in the queue
-		timeReq = (rand()%(420-30))+30; // random # b/w 30seconds and 7 minutes (in sec)
-		usleep(timeReq*1000); // help customer
-
-		// should probably deallocate the customer eh?
-
+		// queue was empty
+		if(customer == NULL){
+			usleep(100);
+		} else {
+			printf("  Teller %d is helping a customer\n",tellerNum);
+			timeReq = (rand()%(420-30))+30; // random # b/w 30seconds and 7 minutes (in sec)
+			usleep(timeReq*1000); // help customer
+			delete(customer); // done!
+		}
 	}
     done = true; // bank is closed and the customer queue is empty.
+    printf("Teller %d is finished\n", tellerNum);
 
 }
-
 
 /**
  * Tell the teller to start working. Will initiate a thread representing the 
@@ -58,7 +62,7 @@ void Teller::helpCustomers(){
 void Teller::startWorking() {
     open = true;
     done = false;
-    int rc = pthread_create(&_thread, NULL, InternalThreadEntryFunc,this);
+    int rc = pthread_create(&thread, NULL, TellerRunFunction,this);
 
     if (rc){
         printf("ERROR; return code from pthread_create() is %d\n", rc);
@@ -72,7 +76,7 @@ void Teller::startWorking() {
  **/
 void Teller::stopWorking() {
 	open = false;
-	printf("Bye bye\n");
-   // while(!done){} // wait until customer queue is empty
-    pthread_join(_thread,NULL);
+	printf("  Teller %d is finishing\n", tellerNum);
+    while(!done){usleep(100);} // wait until customer queue is empty
+    pthread_join(thread,NULL);
 }
