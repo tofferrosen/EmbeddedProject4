@@ -15,7 +15,8 @@
 
 #include <pthread.h>
 #include <deque>
-#include "Customer.h"
+#include <Customer.h>
+#include <unistd.h>
 
 using namespace std;
 

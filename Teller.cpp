@@ -32,7 +32,6 @@ Teller::~Teller() {
  * transaction.
  */
 void Teller::helpCustomers(){
-	time_t timer;
 	Customer customer;
 	int timeReq;
 

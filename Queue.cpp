@@ -19,33 +19,53 @@ Queue::~Queue() {
 	// TODO Auto-generated destructor stub
 }
 
+/**
+ * Pops and returns first element in the queue.
+ * IF the queue is empty, returns null.
+ */
 Customer Queue::pop() {
+	Customer customer;
 
-    // lock mutex
-    pthread_mutex_lock(&mutex);
-    
-    if (container.empty()){
-        // TODO
+    // aquire lock mutex
+    while(pthread_mutex_trylock(&mutex) != 0){
+    	usleep(100); // to not lock CPU
     }
-    Customer customer = container.front();
-    container.pop_front();
 
-    // release mutex
-    pthread_mutex_unlock(&mutex);
-    return customer;
+    // make sure the container is not empty
+	if (container.empty()){
+		customer = NULL;
+	} else {
+		Customer customer = container.front();
+		container.pop_front();
+	}
+
+	pthread_mutex_unlock(&mutex); 	// release mutex
+	return customer;
 }
 
+/**
+ * Returns true if queue is empty
+ */
 bool Queue::empty() {
 	bool empty = false;
-	pthread_mutex_lock(&mutex);
+	// aquire lock mutex
+	while(pthread_mutex_trylock(&mutex) != 0){
+		usleep(100); // to not lock CPU
+	}
 	empty = container.empty();
-	pthread_mutex_unlock(&mutex);
+	pthread_mutex_unlock(&mutex);  // release mutex
 	return empty;
 }
 
+/**
+ * Adds customer to the end of the queue.
+ */
 void Queue::enqueue(Customer *customer){
-    pthread_mutex_lock(&mutex);
+
+	// aquire lock mutex
+	while(pthread_mutex_trylock(&mutex) != 0){
+		usleep(100); // to not lock CPU
+	}
     container.push_back(*customer);
     pthread_mutex_unlock(&mutex);
-    
 }
