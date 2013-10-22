@@ -12,6 +12,7 @@
 
 class Customer {
 public:
+	Customer();
 	Customer(int);
 	virtual ~Customer();
 	void setTellerTime(int);

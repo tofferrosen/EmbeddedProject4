@@ -62,8 +62,7 @@ void Bank::openAndRunBank(){
 
 		// Add customer
 		if(currentTimeSec >= timeAddCustomer){
-			Customer *customer = new Customer();
-			customerQueue->enqueue(customer);
+			customerQueue->enqueue(new Customer(currentTimeSec));
 
 			// update next time to add customer
 			newCustomerInterval = rand() % 60 + 240;

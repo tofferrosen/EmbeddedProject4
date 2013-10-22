@@ -8,6 +8,9 @@
 
 #include "Customer.h"
 
+Customer::Customer(){
+
+}
 Customer::Customer(int curTime) {
 	bankEnterTime = curTime;
 }

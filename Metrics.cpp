@@ -7,12 +7,13 @@
 
 #include "Metrics.h"
 
-Metrics::addCustomer( Customer c ){
+void Metrics::addCustomer( Customer c ){
 	if( c.getWaitTime() > maxCustWaitTime ){
 		maxCustWaitTime = c.getWaitTime();
 	}
 	if( c.getServiceTime() > maxServiceTime ){
 		maxServiceTime = c.getServiceTime();
+	}
 }
 
 Metrics::Metrics() {
