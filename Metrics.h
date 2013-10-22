@@ -13,16 +13,18 @@ class Metrics {
 public:
 	Metrics();
 	virtual ~Metrics();
-	void addCustomer( Customer c ); // Add everytime customer is finished
-		// update total wait, ;
-		// update max wait, service time;
-		// update max depth;
+	void addCustomer(Customer c); // Add everytime customer is finished
+	// update total wait, service time, num_customers;
+	// update max wait, service time;
 
-	void addTellerWaitTime( int wt ); // Add everytime a customer comes in
+	void updateMaxDepth(int size);
+	// update max depth;
 
-	float getAvgQueueWaitTime();
+	void addTellerWaitTime(int wt); // Add everytime a customer comes in
+
+	float getAvgCustWaitTime();
 	float getAvgServiceTime(); // average time with teller
-	float getNumCustomers();
+	int getNumCustomers();
 
 private:
 	int totalCustWaitTime;
