@@ -9,17 +9,29 @@
 #define TELLER_H_
 
 #include <vector>
+#include <pthread.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <queue.h>
+
 
 class Teller {
 public:
-	Teller(Queue queue); // Constructor
+	Teller(Queue* queue); // Constructor
 	virtual ~Teller();
+    void startWorking();
+    void stopWorking();
+
     
-    void HelpCustomer();
+protected:
+    void helpCustomers();
 
 private:
-    int maxWaitTime; // max time waiting on a customer for metrics
-    vector timesWithCustomers; // vector of times spent with customers metrics
+    static void * InternalThreadEntryFunc(void * This) {((Teller *)This)->helpCustomers(); return NULL;}
+    pthread_t _thread;
+    Queue *customerQueue;
+    bool open;
+    bool done;
     
 };
 

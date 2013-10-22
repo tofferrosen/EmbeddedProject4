@@ -11,20 +11,22 @@
 #include <teller.h>
 #include <queue.h>
 #include <time.h>
+#include <stdio.h>
 
-const int numOfTellers = 3;
+
 
 class Bank {
 public:
 	Bank();
 	virtual ~Bank();
 
-	void openBank();
+	void openAndRunBank();
 	void closeBank();
 
 private:
-	Teller tellers[];
-	Queue customerQueue;
+	static const int numOfTellers = 3;
+	Teller* tellers[numOfTellers];
+	Queue* customerQueue;
 	bool open;
 
 };

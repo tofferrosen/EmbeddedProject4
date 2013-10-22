@@ -9,7 +9,7 @@
  *      Author: cbr4830
  */
 
-#include "Bank.h"
+#include <Bank.h>
 
 const float scaledMinute = 0.1000;
 const int sevenHoursInMins = 420; // 7 (num of hours) * 60 minutes (hours)
@@ -20,56 +20,68 @@ const int secsInHour = 60;
  * Initializes the customer queue and the tellers
  */
 Bank::Bank() {
-	Queue queue = new Queue();
-	tellers = new teller[numOfTellers];
+	customerQueue = new Queue();
 
 	// instantiate the tellers
 	for(int i = 0; i < numOfTellers; i++){
-		Teller teller = new Teller(queue);
+		Teller *teller = new Teller(customerQueue);
 		tellers[i] = teller;
 	}
 }
 
 /**
- * Close the bank
+ * Opens the bank
  */
-void Bank::closeBank(){
+void Bank::openAndRunBank(){
 	int currentTimeSec;
 	int timeToCloseSec;
+	int newCustomerInterval;
+	int timeAddCustomer;
 	time_t timer;
 	struct tm y2k;
 
 	y2k.tm_hour = 0; y2k.tm_min = 0; y2k.tm_sec = 0;
 	y2k.tm_year = 100; y2k.tm_mon = 0; y2k.tm_mday = 1;
 
-	// Let the tellers know we are closed
+	// Open for business! Put the tellers to work
 	for(int i = 0; i < numOfTellers; i++){
-		Teller teller = tellers[i];
-		teller.stopWorking();
+		Teller *teller = tellers[i];
+		teller->startWorking();
 	}
 
 	time(&timer); // get current time
 	currentTimeSec = difftime(timer,mktime(&y2k)); // seconds since y2k
-	timeToCloseSec = currentTime + (sevenHoursInMins * scaledMinute * secsInHours);
+	timeToCloseSec = currentTimeSec + (sevenHoursInMins * scaledMinute * secsInHour);
+	newCustomerInterval = rand() % 60 + 240; // random # between 1 to 4 minutes in seconds
+	timeAddCustomer = currentTimeSec + newCustomerInterval;
+
+	// operate within open hours
 	while(currentTimeSec < timeToCloseSec){
+		time(&timer);
+		currentTimeSec = difftime(timer,mktime(&y2k));
 
+		// Add customer
+		if(currentTimeSec >= timeAddCustomer){
+			Customer *customer = new Customer();
+			customerQueue->enqueue(customer);
+
+			// update next time to add customer
+			newCustomerInterval = rand() % 60 + 240;
+			timeAddCustomer = currentTimeSec + newCustomerInterval;
+		}
 	}
-
 }
 
 /**
  * Open the bank
  */
-void Bank::openBank(){
+void Bank::closeBank(){
 
 	// Open for business! Put the tellers to work
 	for(int i = 0; i < numOfTellers; i++){
-		Teller teller = tellers[i];
-		teller.startWorking();
+		Teller *teller = tellers[i];
+		teller->stopWorking();
 	}
-
-	// Add customers until close time
-
 }
 
 Bank::~Bank() {

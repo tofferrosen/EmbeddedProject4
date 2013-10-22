@@ -8,7 +8,15 @@
 //  Copyright (c) 2013 Christoffer Rosen. All rights reserved.
 //
 
-#include "Queue.h"
+#include <Queue.h>
+
+Queue::Queue() {
+
+}
+
+Queue::~Queue() {
+	// TODO Auto-generated destructor stub
+}
 
 Customer Queue::pop() {
 
@@ -29,8 +37,9 @@ Customer Queue::pop() {
 bool Queue::empty() {
 	bool empty = false;
 	pthread_mutex_lock(&mutex);
-	emtyp = container.empty();
+	empty = container.empty();
 	pthread_mutex_unlock(&mutex);
+	return empty;
 }
 
 void Queue::enqueue(Customer *customer){
