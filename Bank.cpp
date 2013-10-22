@@ -54,18 +54,15 @@ void Bank::openAndRunBank(){
 	printf("Before the timer jazz\n");
 
 	timer = clock();
-
 	printf("Start time is: %d\n", difftime(start,timer));
 	while(bankOpenSec > 0){
 
-		int newCustomerEntryTime =  rand() % 60 + 240; // random # between 1 to 4 minutes in seconds
-		printf("Customer is coming next... %d\n", newCustomerEntryTime);
-		// Add customer to queue!!
-		//printf("Adding customer!!\n");
-		//customerQueue->enqueue(new Customer(clock()));
-		usleep(500); // to prevent CPU locking
-		printf("Bankopensec: %d", bankOpenSec);
+		int newCustomerEntryTime = (rand()%(240-60))+60; // random # between 1 to 4 minutes in seconds
+		sleep(newCustomerEntryTime);
 
+		// Add customer to queue!!
+		printf("Customer is coming next... %d\n", newCustomerEntryTime);
+		customerQueue->enqueue(new Customer(clock()));;
 	}
 
 	closeBank();

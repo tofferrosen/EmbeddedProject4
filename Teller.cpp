@@ -35,37 +35,20 @@ void Teller::helpCustomers(){
 	time_t timer;
 	Customer customer;
 	int timeReq;
-	double currentTime;
-	double timeToWait;
-	struct tm y2k;
-
-	y2k.tm_hour = 0; y2k.tm_min = 0; y2k.tm_sec = 0;
-	y2k.tm_year = 100; y2k.tm_mon = 0; y2k.tm_mday = 1;
 
 	printf("Teller ready!");
 
-	while(true){
-		usleep(500);
+
+	while(open || !customerQueue->empty()){
+		customer = customerQueue->pop(); // get the next customer in the queue
+		timeReq = (rand()%(420-30))+30; // random # b/w 30seconds and 7 minutes (in sec)
+		sleep(timeReq); // help customer
+
+		// should probably deallocate the customer eh?
+
 	}
-/*
-    while(open || !customerQueue->empty()){
-
-    	customer = customerQueue->pop(); // get the next customer in the queue
-    	timeReq = rand() % 30 + 420; // random # between 30 sec and 7 minutes
-    	time(&timer); // get current time
-    	currentTime = difftime(timer,mktime(&y2k)); // seconds since y2k
-    	timeToWait = currentTime + timeReq; // seconds + random time between 30 and 7 minutes
-
-    	// helping customer...
-    	while(currentTime < timeToWait){
-    		time(&timer);
-    		currentTime = difftime(timer,mktime(&y2k));
-    	}
-    	delete(&customer);
-    	// we are done with customer - deallocate
-    } */
-
     done = true; // bank is closed and the customer queue is empty.
+
 }
 
 
