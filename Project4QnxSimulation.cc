@@ -1,7 +1,14 @@
 #include <cstdlib>
 #include <iostream>
+#include <Bank.h>
+#include <stdio.h>
 
 int main(int argc, char *argv[]) {
-	std::cout << "Welcome to the QNX Momentics IDE" << std::endl;
+	printf("#Code Start# \n");
+	Bank *bank = new Bank();
+	bank->openAndRunBank();
+
+	delete(bank);
+	printf("\nCode done!");
 	return EXIT_SUCCESS;
 }

@@ -42,6 +42,12 @@ void Teller::helpCustomers(){
 	y2k.tm_hour = 0; y2k.tm_min = 0; y2k.tm_sec = 0;
 	y2k.tm_year = 100; y2k.tm_mon = 0; y2k.tm_mday = 1;
 
+	printf("Teller ready!");
+
+	while(true){
+		usleep(500);
+	}
+/*
     while(open || !customerQueue->empty()){
 
     	customer = customerQueue->pop(); // get the next customer in the queue
@@ -57,7 +63,7 @@ void Teller::helpCustomers(){
     	}
     	delete(&customer);
     	// we are done with customer - deallocate
-    }
+    } */
 
     done = true; // bank is closed and the customer queue is empty.
 }
@@ -71,6 +77,7 @@ void Teller::startWorking() {
     open = true;
     done = false;
     int rc = pthread_create(&_thread, NULL, InternalThreadEntryFunc,this);
+
     if (rc){
         printf("ERROR; return code from pthread_create() is %d\n", rc);
         return;
@@ -83,7 +90,7 @@ void Teller::startWorking() {
  **/
 void Teller::stopWorking() {
 	open = false;
-
-    while(!done){} // wait until customer queue is empty
-    pthread_exit(&_thread);
+	printf("Bye bye\n");
+   // while(!done){} // wait until customer queue is empty
+    pthread_join(_thread,NULL);
 }

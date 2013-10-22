@@ -11,9 +11,7 @@
 
 #include <Bank.h>
 
-const float scaledMinute = 0.1000;
-const int sevenHoursInMins = 420; // 7 (num of hours) * 60 minutes (hours)
-const int secsInHour = 60;
+static unsigned int bankOpenSec = 420;
 
 /**
  * Constructor
@@ -24,24 +22,27 @@ Bank::Bank() {
 
 	// instantiate the tellers
 	for(int i = 0; i < numOfTellers; i++){
-		Teller *teller = new Teller(customerQueue);
-		tellers[i] = teller;
+		tellers[i] = new Teller(customerQueue);
 	}
 }
 
 /**
- * Opens the bank
+ * Creates the timer thread
+ * Starts running the timer
+ */
+void Bank::runTimer(){
+	pthread_create(&timer, NULL, TimerThreadFunc, this);
+}
+
+/**
+ * Opens the bank, starts running the global timer, and
+ * adds customers to queue.
  */
 void Bank::openAndRunBank(){
-	int currentTimeSec;
-	int timeToCloseSec;
-	int newCustomerInterval;
-	int timeAddCustomer;
-	time_t timer;
-	struct tm y2k;
+	printf("Bank is open");
 
-	y2k.tm_hour = 0; y2k.tm_min = 0; y2k.tm_sec = 0;
-	y2k.tm_year = 100; y2k.tm_mon = 0; y2k.tm_mday = 1;
+	time_t timer;
+	time_t start = clock();
 
 	// Open for business! Put the tellers to work
 	for(int i = 0; i < numOfTellers; i++){
@@ -49,26 +50,25 @@ void Bank::openAndRunBank(){
 		teller->startWorking();
 	}
 
-	time(&timer); // get current time
-	currentTimeSec = difftime(timer,mktime(&y2k)); // seconds since y2k
-	timeToCloseSec = currentTimeSec + (sevenHoursInMins * scaledMinute * secsInHour);
-	newCustomerInterval = rand() % 60 + 240; // random # between 1 to 4 minutes in seconds
-	timeAddCustomer = currentTimeSec + newCustomerInterval;
+	runTimer(); // start the timer
+	printf("Before the timer jazz\n");
 
-	// operate within open hours
-	while(currentTimeSec < timeToCloseSec){
-		time(&timer);
-		currentTimeSec = difftime(timer,mktime(&y2k));
+	timer = clock();
 
-		// Add customer
-		if(currentTimeSec >= timeAddCustomer){
-			customerQueue->enqueue(new Customer(currentTimeSec));
+	printf("Start time is: %d\n", difftime(start,timer));
+	while(bankOpenSec > 0){
 
-			// update next time to add customer
-			newCustomerInterval = rand() % 60 + 240;
-			timeAddCustomer = currentTimeSec + newCustomerInterval;
-		}
+		int newCustomerEntryTime =  rand() % 60 + 240; // random # between 1 to 4 minutes in seconds
+		printf("Customer is coming next... %d\n", newCustomerEntryTime);
+		// Add customer to queue!!
+		//printf("Adding customer!!\n");
+		//customerQueue->enqueue(new Customer(clock()));
+		usleep(500); // to prevent CPU locking
+		printf("Bankopensec: %d", bankOpenSec);
+
 	}
+
+	closeBank();
 }
 
 /**
@@ -81,6 +81,19 @@ void Bank::closeBank(){
 		Teller *teller = tellers[i];
 		teller->stopWorking();
 	}
+
+	printf("\nThe bank has closed");
+}
+
+/*
+ * Decrements the bankOpenSec every second.
+ */
+void Bank::timerDecrementer(){
+
+	while(true){
+		usleep(100000);
+		bankOpenSec--;
+	}
 }
 
 Bank::~Bank() {
@@ -88,8 +101,6 @@ Bank::~Bank() {
 	for(int i = 0; i < numOfTellers; i++){
 		delete(tellers[i]);
 	}
-	// delete the array
-	delete(tellers);
 
 	// delete the customer queue
 	delete(customerQueue);

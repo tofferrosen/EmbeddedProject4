@@ -11,7 +11,8 @@
 #include <Queue.h>
 
 Queue::Queue() {
-
+	// initalize the mutex!
+	pthread_mutex_init(&mutex, NULL);
 }
 
 Queue::~Queue() {
