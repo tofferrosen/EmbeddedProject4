@@ -39,8 +39,6 @@ void Bank::runTimer(){
  * adds customers to queue.
  */
 void Bank::openAndRunBank(){
-	printf("Bank is open");
-
 	time_t timer;
 	time_t start = clock();
 
@@ -51,17 +49,15 @@ void Bank::openAndRunBank(){
 	}
 
 	runTimer(); // start the timer
-	printf("Before the timer jazz\n");
 
 	timer = clock();
 	printf("Start time is: %d\n", difftime(start,timer));
 	while(bankOpenSec > 0){
 
 		int newCustomerEntryTime = (rand()%(240-60))+60; // random # between 1 to 4 minutes in seconds
-		sleep(newCustomerEntryTime);
+		usleep(newCustomerEntryTime*1000);
 
 		// Add customer to queue!!
-		printf("Customer is coming next... %d\n", newCustomerEntryTime);
 		customerQueue->enqueue(new Customer(clock()));;
 	}
 

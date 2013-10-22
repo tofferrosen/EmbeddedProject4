@@ -41,7 +41,7 @@ void Teller::helpCustomers(){
 	while(open || !customerQueue->empty()){
 		customer = customerQueue->pop(); // get the next customer in the queue
 		timeReq = (rand()%(420-30))+30; // random # b/w 30seconds and 7 minutes (in sec)
-		sleep(timeReq); // help customer
+		usleep(timeReq*1000); // help customer
 
 		// should probably deallocate the customer eh?
 

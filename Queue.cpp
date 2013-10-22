@@ -36,6 +36,7 @@ Customer Queue::pop() {
 		customer = NULL;
 	} else {
 		Customer customer = container.front();
+		printf("pop from the queue\n");
 		container.pop_front();
 	}
 
@@ -66,6 +67,7 @@ void Queue::enqueue(Customer *customer){
 	while(pthread_mutex_trylock(&mutex) != 0){
 		usleep(100); // to not lock CPU
 	}
+	printf("Add to queue\n");
     container.push_back(*customer);
     pthread_mutex_unlock(&mutex);
 }
