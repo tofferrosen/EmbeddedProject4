@@ -14,7 +14,6 @@
 
 Bank::Bank(){
 	customerQueue = new Queue();
-	metrics = new Metrics();
 
 	// Instantiate the tellers:
 	for(int i = 0; i < numOfTellers; i++){
@@ -55,15 +54,11 @@ void Bank::openAndRunBank(){
 		if(bankOpenSec > 0){
 			// Add customer to queue!!
 			Customer* c = new Customer(bankOpenSec);
-			//metrics->addCustomer(*c);
 			customerQueue->enqueue(c);
-			printf("\tGLOBAL TIME: %d\n", bankOpenSec);
 		}else{
-			printf("############# EXIT WHILE LOOP ###");
 			break;
 		}
 	}
-	printf("*************** CLOSE BANK *********");
 	closeBank();
 }
 
@@ -81,7 +76,15 @@ void Bank::closeBank(){
 		teller->stopWorking();
 	}
 	stopTimer();
+	printf("This fabulous bank has closed!\n");
 
+	printf("Customers Served:\t %d\n", metrics->getNumCustomers());
+	printf("Average time in queue: \t %d\n", metrics->getAvgCustWaitTime());
+	printf("Maximum time in queue: \t %d\n", metrics->getMaxDepth());
+	printf("Average time at teller:\t %d\n", metrics->getAvgTellerWaitTime());
+	printf("Maximum time at teller:\t %d\n", metrics->getMaxTellerWaitTime());
+	printf("Average service time is:\t %d\n", metrics->getAvgServiceTime());
+/** ??
 	printf("# ------------------------------------------------------------- #\n\
 			The fabulous bank has closed, we apologize for the inconvenience!\n\
 			# ------------------------------------------------------------- #\n\
@@ -100,7 +103,7 @@ void Bank::closeBank(){
 			metrics->getAvgServiceTime(),
 			metrics->getMaxServiceTime(),
 			metrics->getAvgTellerWaitTime(),
-			metrics->getMaxTellerWaitTime());
+			metrics->getMaxTellerWaitTime()); **/
 }
 
 /*

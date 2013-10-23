@@ -8,10 +8,8 @@
  *      Author: cbr4830
  */
 
-#include <time.h>
-#include <customer.h>
-#include <teller.h>
-#include <Constants.h>
+
+#include <Teller.h>
 
 /**
 * Constructor
@@ -43,12 +41,13 @@ void Teller::helpCustomers(){
 		customer = customerQueue->pop(); // get the next customer in the queue
 		// queue was empty
 		if(customer == NULL){
-			usleep(1);
+			usleep(10);
 		} else {
 			//printf("  Teller %d is helping a customer\n",tellerNum);
 			timeReq = (rand()%(420-30))+30; // random # b/w 30seconds and 7 minutes (in sec)
 			//printf("<----- helping customer for: %d\n", timeReq);
 			usleep((int)(timeReq*SIMULATED_SEC_SCALE)); // help customer
+			metrics->addCustomer(*customer);
 			delete(customer); // done!
 		}
 	}
@@ -79,6 +78,6 @@ void Teller::startWorking() {
 void Teller::stopWorking() {
 	open = false;
 	//printf("  Teller %d is finishing\n", tellerNum);
-    while(!done){usleep(1);} // wait until customer queue is empty
+    while(!done){usleep(10);} // wait until customer queue is empty
     pthread_join(thread,NULL);
 }

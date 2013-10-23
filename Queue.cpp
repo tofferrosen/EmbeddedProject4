@@ -68,6 +68,7 @@ void Queue::enqueue(Customer *customer){
 	while(pthread_mutex_trylock(&mutex) != 0){
 		usleep(1); // to not lock CPU
 	}
+
 	//printf("A new customer has entered!\n");
     container.push_back(customer);
     pthread_mutex_unlock(&mutex);

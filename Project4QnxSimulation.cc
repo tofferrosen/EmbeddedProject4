@@ -6,6 +6,7 @@
 #include <time.h>
 
 int main(int argc, char *argv[]) {
+
 	Bank *bank = new Bank();
 
 	clock_t t = clock();

@@ -5,11 +5,14 @@
  *      Author: cbr4830
  */
 
+
+
 #ifndef CONSTANTS_H_
 #define CONSTANTS_H_
+#include "Metrics.h"
 
-const int SEVEN_HOUR_IN_SECONDS = 25200;
-
+const int SEVEN_HOUR_IN_SECONDS = 1000; //25200;
+extern Metrics * metrics;
 // 100 ms per minute --> 100ms = 100000us
 const int SIMULATED_MIN_SCALE = 100;
 const int SIMULATED_SEC_SCALE = (int)(SIMULATED_MIN_SCALE / 60);

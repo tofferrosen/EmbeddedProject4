@@ -14,6 +14,9 @@
 #include <stdlib.h>
 #include <queue.h>
 #include <unistd.h>
+#include <Constants.h>
+#include <time.h>
+#include <customer.h>
 
 
 class Teller {

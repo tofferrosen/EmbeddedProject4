@@ -10,11 +10,11 @@
 #include <stdio.h>
 
 void Metrics::addCustomer(Customer c){
-	printf("Trying to aquire lock\n");
+
 	while(pthread_mutex_trylock(&mutex) != 0){
 		usleep(1); // to not lock CPU
 	}
-	printf("lock aquired\n");
+
 	if( c.getWaitTime() > maxCustWaitTime ){
 		maxCustWaitTime = c.getWaitTime();
 	}
@@ -31,7 +31,6 @@ void Metrics::addCustomer(Customer c){
 
 	// Release Mutex:
 	pthread_mutex_unlock(&mutex);
-	printf("mutex unlocked\n");
 }// addCustomer()
 
 void Metrics::updateMaxDepth(int size){
