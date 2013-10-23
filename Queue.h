@@ -28,6 +28,8 @@ public:
     Customer * pop();
     void enqueue(Customer *customer);
     bool empty();
+    int size();
+    void printQueue();
     
 private:
     

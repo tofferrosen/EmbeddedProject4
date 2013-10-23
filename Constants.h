@@ -1,22 +1,24 @@
-/*
+/**
  * Constants.h
  *
- *  Created on: Oct 22, 2013
- *      Author: cbr4830
+ * Created on: Oct 22, 2013
+ * Author: cbr4830
  */
-
-
 
 #ifndef CONSTANTS_H_
 #define CONSTANTS_H_
-#include "Metrics.h"
 
-const int SEVEN_HOUR_IN_SECONDS = 1000; //25200;
-extern Metrics * metrics;
-// 100 ms per minute --> 100ms = 100000us
-const int SIMULATED_MIN_SCALE = 100;
-const int SIMULATED_SEC_SCALE = (int)(SIMULATED_MIN_SCALE / 60);
+// Seven hours in seconds:
+const int WORK_DAY = 1300;//25200;
 
-static int bankOpenSec = SEVEN_HOUR_IN_SECONDS;
+// One second in microseconds:
+const float ONE_SECOND = 1000000;
+
+// The time scaler, used to adjust simulation speed:
+const float TIME_SCALE = 0.01;
+const int TIME_INCR = 30;
+const int NUM_TELLERS = 3;
+// Speed calculation:
+const int DEFAULT_SPEED = (int)(ONE_SECOND*TIME_SCALE);
 
 #endif /* CONSTANTS_H_ */

@@ -8,6 +8,11 @@
 #ifndef METRICS_H_
 #define METRICS_H_
 #include <pthread.h>
+#include <pthread.h>
+#include <unistd.h>
+#include <stdio.h>
+
+#include "Constants.h"
 #include "Customer.h"
 
 class Metrics {
@@ -31,7 +36,7 @@ public:
 	int getMaxServiceTime();
 	float getAvgTellerWaitTime();
 	int getMaxTellerWaitTime();
-
+	int getTotalCustWaitTime();
 private:
 	pthread_mutex_t mutex;
 	int totalCustWaitTime;

@@ -1,33 +1,27 @@
-/*
+/**
  * Bank.cpp
  *
- *	The simulation time is scaled such that 100 milliseconds of absolute clock time
- *	represents 1 minute of simulation clock time
+ * The simulation time is scaled such that 100 milliseconds of absolute clock time
+ * represents 1 minute of simulation clock time.
+ * Open between 9:00am to 4:00pm - so open for 7 hours
  *
- *	Open between 9:00am to 4:00pm - so open for 7 hours
- *  Created on: Oct 16, 2013
- *      Author: cbr4830
+ * Created on: Oct 16, 2013
+ * Author: cbr4830
  */
 
-#include <Bank.h>
+#include "Bank.h"
 
+Bank::Bank(TimerSys* t){
+	// Store Reference To Timer:
+	timer = t;
 
-Bank::Bank(){
+	// Create New Customer Queue:
 	customerQueue = new Queue();
 
-	// Instantiate the tellers:
-	for(int i = 0; i < numOfTellers; i++){
-		tellers[i] = new Teller(customerQueue,i+1);
+	// Instantiate Tellers:
+	for(int i = 0; i < NUM_TELLERS; i++){
+		tellers[i] = new Teller(customerQueue,i+1,timer);
 	}
-}
-
-/**
- * Creates the timer thread
- * Starts running the timer
- */
-void Bank::runTimer(){
-	timerOn = true;
-	pthread_create(&thread, NULL, TimerThreadFunc, this);
 }
 
 /**
@@ -38,88 +32,102 @@ void Bank::openAndRunBank(){
 
 	printf("This fabulous bank has opened!\n");
 
-	// Open for business! Put the tellers to work
-	for(int i = 0; i < numOfTellers; i++){
+	// Is Empty:
+	customerQueue->printQueue();
+	printf("Is Empty? %d\n", customerQueue->empty());
+	// Has 1 Element:
+	customerQueue->enqueue(new Customer(100));
+	customerQueue->printQueue();
+
+	// Has 3 Elements:
+	customerQueue->enqueue(new Customer(200));
+	customerQueue->enqueue(new Customer(300));
+	customerQueue->printQueue();
+
+	// Dequeue 1:
+	customerQueue->pop();
+	customerQueue->printQueue();
+
+	// Dequeue All:
+	customerQueue->pop();
+	customerQueue->pop();
+	customerQueue->printQueue();
+
+	// Dequeue While Empty:
+	customerQueue->pop();
+	customerQueue->printQueue();
+
+	for(int i = 0; i < NUM_TELLERS; i++){
 		Teller *teller = tellers[i];
 		teller->startWorking();
 	}
+	timer->startTimer(); // start the timer
+	// Has 3 Elements:
+	customerQueue->enqueue(new Customer(timer->readTimer()));
+	customerQueue->enqueue(new Customer(timer->readTimer()));
+	customerQueue->enqueue(new Customer(timer->readTimer()));
+	usleep(100000);
+	customerQueue->enqueue(new Customer(timer->readTimer()));
 
-	runTimer(); // start the timer
+	while(timer->isRunning()){
+		sched_yield();
+	}
 
+	// Close Bank:
+	closeBank();
+
+	/*
 	while(true){
 		int newCustomerEntryTime = ((rand()%(240-60))+60); // random # between 1 to 4 minutes in sim seconds
-		//printf("----> Adding customer in: %d\n", newCustomerEntryTime);
+		printf("----> Adding customer in: %d\n", newCustomerEntryTime);
 
 		usleep((int)( newCustomerEntryTime * SIMULATED_SEC_SCALE ));
 		if(bankOpenSec > 0){
 			// Add customer to queue!!
 			Customer* c = new Customer(bankOpenSec);
 			customerQueue->enqueue(c);
+			//printf("^*^ Queue Size %d\n",customerQueue->size());
 		}else{
 			break;
 		}
-	}
-	closeBank();
-}
-
-void Bank::stopTimer(){
-	timerOn = false;
-	pthread_join(thread,NULL);
+	}*/
+	//closeBank();
 }
 
 /**
  * Close the bank
  */
 void Bank::closeBank(){
-	for(int i = 0; i < numOfTellers; i++){
+	// Dismiss all Telemarketers:
+	for(int i = 0; i < NUM_TELLERS; i++){
 		Teller *teller = tellers[i];
 		teller->stopWorking();
 	}
-	stopTimer();
+	timer->stopTimer();
+
+	printf("# ============================================ #\n");
+	// Total Customers:
 	printf("This fabulous bank has closed!\n");
-
-	printf("Customers Served:\t %d\n", metrics->getNumCustomers());
-	printf("Average time in queue: \t %d\n", metrics->getAvgCustWaitTime());
-	printf("Maximum time in queue: \t %d\n", metrics->getMaxDepth());
-	printf("Average time at teller:\t %d\n", metrics->getAvgTellerWaitTime());
-	printf("Maximum time at teller:\t %d\n", metrics->getMaxTellerWaitTime());
-	printf("Average service time is:\t %d\n", metrics->getAvgServiceTime());
-/** ??
-	printf("# ------------------------------------------------------------- #\n\
-			The fabulous bank has closed, we apologize for the inconvenience!\n\
-			# ------------------------------------------------------------- #\n\
-		Customers Serviced:\t%d\n\n\
-		Maximum Depth Of The Queue:\t%d\n\n\
-		Average Time In Queue:\t%f\n\
-		Maximum Time In Queue:\t%d\n\n\
-		Average Time At Teller:\t%f\n\
-		Maximum Time At Teller:\t%d\n\n\
-		Average Teller Wait Time:\t%f\n\
-		Maximum Teller Wait Time:\t%d\n\n",
-			metrics->getNumCustomers(),
-			metrics->getMaxDepth(),
-			metrics->getAvgCustWaitTime(),
-			metrics->getMaxCustWaitTime(),
-			metrics->getAvgServiceTime(),
-			metrics->getMaxServiceTime(),
-			metrics->getAvgTellerWaitTime(),
-			metrics->getMaxTellerWaitTime()); **/
+	printf("# ============================================ #\n");
+	printf("Customers Served:\t\t%d\n\n", metrics->getNumCustomers());
+	printf("# -------------------------------------------- #\n");
+	// Averages:
+	printf("Average time in queue: \t\t%.2f\n", metrics->getAvgCustWaitTime());
+	printf("Average service time is:\t%.2f\n", metrics->getAvgServiceTime());
+	printf("Average teller wait time:\t%.2f\n\n", metrics->getAvgTellerWaitTime());
+	printf("# -------------------------------------------- #\n");
+	// Maximum Values:
+	printf("Maximum time in queue: \t\t%d\n", metrics->getMaxCustWaitTime());
+	printf("Maximum teller wait time:\t%d\n", metrics->getMaxTellerWaitTime());
+	printf("Maximum time at teller:\t\t%d\n", metrics->getMaxServiceTime());
+	printf("Maximum depth is:\t\t%d\n", metrics->getMaxDepth());
+	printf("# -------------------------------------------- #\n");
 }
 
-/*
- * Decrements the bankOpenSec every second.
- */
-void Bank::timerDecrementer(){
-
-	while(timerOn == true){
-		usleep((int)(SIMULATED_SEC_SCALE));
-		bankOpenSec--;
-	}
-}
 
 Bank::~Bank() {
 	// Delete the tellers
-	for(int i = 0; i < numOfTellers; i++){
+	for(int i = 0; i < NUM_TELLERS; i++){
 		delete(tellers[i]);
 	}
 

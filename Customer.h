@@ -19,6 +19,7 @@ public:
 	void setCustomerDone(int);
 	int getWaitTime(void);
 	int getServiceTime(void);
+	int getBankEnterTime(void);
 	
 private:
 	int bankEnterTime;

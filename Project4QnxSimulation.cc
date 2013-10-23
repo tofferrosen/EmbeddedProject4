@@ -1,19 +1,44 @@
+/**
+ * Project4QnxSimulation.cc
+ *
+ * The main entry point for the algorithm.
+ *
+ * Created on: Oct 16, 2013
+ * Author: cbr4830, lgs8331
+ */
+// Standard Library Headers:
 #include <cstdlib>
-#include <iostream>
-#include <Constants.h>
-#include <Bank.h>
 #include <stdio.h>
 #include <time.h>
 
+// Metrics Object:
+#include "Metrics.h"
+Metrics* metrics;
+
+// Custom Headers:
+#include "Constants.h"
+#include "TimerSys.h"
+#include "Bank.h"
+
+/**
+ * Function:	main
+ * Description:	The main entry point for the program.
+ */
 int main(int argc, char *argv[]) {
+	// Declare System Timer:
+	TimerSys* timer = new TimerSys( WORK_DAY, DEFAULT_SPEED );
 
-	Bank *bank = new Bank();
+	// Declare Metrics Aggregator:
+	metrics = new Metrics();
 
-	clock_t t = clock();
+	// Create & Open Bank:
+	Bank *bank = new Bank(timer);
 	bank->openAndRunBank();
-	delete(bank);
-	t = clock()-t;
 
-	printf("Execution Time: %d %f seconds.\n",t,((float)t)/CLOCKS_PER_SEC);
+	// Destroy Pointers:
+	delete(bank);
+	delete(timer);
+
+	// Exit Program:
 	return EXIT_SUCCESS;
-}
+}// main()

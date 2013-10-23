@@ -4,16 +4,15 @@
  *  Created on: Oct 16, 2013
  *      Author: cbr4830
  */
-#include <pthread.h>
-#include <unistd.h>
+
 #include "Metrics.h"
-#include <stdio.h>
 
 void Metrics::addCustomer(Customer c){
 
-	while(pthread_mutex_trylock(&mutex) != 0){
+	/*while(pthread_mutex_trylock(&mutex) != 0){
 		usleep(1); // to not lock CPU
-	}
+	}*/
+	pthread_mutex_lock(&mutex);
 
 	if( c.getWaitTime() > maxCustWaitTime ){
 		maxCustWaitTime = c.getWaitTime();
@@ -47,11 +46,12 @@ void Metrics::updateMaxDepth(int size){
 
 
 void Metrics::addTellerWaitTime(int wt){
+	printf("<WAIT_TIME=%d | MAX=%d| TOTAL=%d>",wt,maxTellerWait,totalTellerWait);
 	while(pthread_mutex_trylock(&mutex) != 0){
 		usleep(1); // to not lock CPU
 	}
-	if( wt > maxWaitQueueSize ){
-		maxWaitQueueSize = wt;
+	if( wt > maxTellerWait ){
+		maxTellerWait = wt;
 	}
 
 	totalTellerWait += wt;
@@ -64,31 +64,34 @@ int Metrics::getNumCustomers(){
 }// getNumCustomers()
 
 int Metrics::getMaxDepth(){
-	return -1;
+	return maxWaitQueueSize;
 }// getMaxDepth()
+int Metrics::getTotalCustWaitTime(){
+	return totalCustWaitTime;
+}// getTotalCustWaitTime()
 
 float Metrics::getAvgCustWaitTime(){
 	return ((float)totalCustWaitTime)/((float)totalNumCustomers);
 }// getAvgCustWaitTime()
 
 int Metrics::getMaxCustWaitTime(){
-	return -1;
+	return maxCustWaitTime;
 }// getMaxCustWaitTime()
 
 float Metrics::getAvgServiceTime(){
-	return ((float)totalServiceTime)/((float)totalNumCustomers);
+	return (float)((totalServiceTime)/(totalNumCustomers));
 }// getAvgServiceTime()
 
 int Metrics::getMaxServiceTime(){
-	return -1;
+	return maxServiceTime;
 }// getMaxServiceTime()
 
 float Metrics::getAvgTellerWaitTime(){
-	return -1;
+	return (float)((totalTellerWait)/(NUM_TELLERS));
 }// getAvgTellerWaitTime()
 
 int Metrics::getMaxTellerWaitTime(){
-	return -1;
+	return maxTellerWait;
 }// getMaxTellerWaitTime()
 
 

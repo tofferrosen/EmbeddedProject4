@@ -11,7 +11,7 @@
 #include <Queue.h>
 
 Queue::Queue() {
-	// initalize the mutex!
+	// Initialize Mutex:
 	pthread_mutex_init(&mutex, NULL);
 }
 
@@ -26,11 +26,11 @@ Queue::~Queue() {
 Customer * Queue::pop() {
 	Customer *customer;
 
-    // aquire lock mutex
-    while(pthread_mutex_trylock(&mutex) != 0){
-    	usleep(1); // to not lock CPU
-    }
-
+    // acquire lock mutex
+    /*while(pthread_mutex_trylock(&mutex) != 0){
+    	sched_yield(); // to not lock CPU
+    }*/
+	pthread_mutex_lock(&mutex);
     // make sure the container is not empty
 	if (container.empty()){
 		customer = NULL;
@@ -45,15 +45,30 @@ Customer * Queue::pop() {
 	return customer;
 }
 
+void Queue::printQueue() {
+	// aquire lock mutex
+	/*while(pthread_mutex_trylock(&mutex) != 0){
+		sched_yield(); // to not lock CPU
+	}*/
+	pthread_mutex_lock(&mutex);
+	printf("Queue: ");
+	for(unsigned int i = 0; i < container.size(); i++){
+		Customer* c = container.at(i);
+		printf("%d ",c->getBankEnterTime());
+	}
+	printf("\n");
+	pthread_mutex_unlock(&mutex);  // release mutex
+}
 /**
  * Returns true if queue is empty
  */
 bool Queue::empty() {
-	bool empty = false;
 	// aquire lock mutex
-	while(pthread_mutex_trylock(&mutex) != 0){
-		usleep(1); // to not lock CPU
-	}
+	/*while(pthread_mutex_trylock(&mutex) != 0){
+		sched_yield(); // to not lock CPU
+	}*/
+	pthread_mutex_lock(&mutex);
+	bool empty = false;
 	empty = container.empty();
 	pthread_mutex_unlock(&mutex);  // release mutex
 	return empty;
@@ -65,11 +80,28 @@ bool Queue::empty() {
 void Queue::enqueue(Customer *customer){
 
 	// aquire lock mutex
-	while(pthread_mutex_trylock(&mutex) != 0){
+	/*while(pthread_mutex_trylock(&mutex) != 0){
 		usleep(1); // to not lock CPU
-	}
+	}*/
 
+	pthread_mutex_lock(&mutex);
 	//printf("A new customer has entered!\n");
     container.push_back(customer);
     pthread_mutex_unlock(&mutex);
 }
+
+/**
+ * Get size of the container
+ **/
+int Queue::size(){
+	// aquire lock mutex
+	int size;
+	/*while(pthread_mutex_trylock(&mutex) != 0){
+		sched_yield(); // to not lock CPU
+	}*/
+	pthread_mutex_lock(&mutex);
+	size = container.size();
+    pthread_mutex_unlock(&mutex);
+    return size;
+}
+

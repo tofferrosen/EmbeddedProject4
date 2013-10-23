@@ -15,26 +15,22 @@
 #include <unistd.h>
 #include <pthread.h>
 #include <Constants.h>
+#include <TimerSys.h>
 
 class Bank {
 public:
-	Bank();
+	Bank(TimerSys* t);
 	virtual ~Bank();
 	void openAndRunBank();
 	void closeBank();
-	void timerDecrementer();
-	void runTimer();
-	void stopTimer();
-
 
 private:
-	static void * TimerThreadFunc(void * This) {((Bank *)This)->timerDecrementer(); return NULL;};
-	static const int numOfTellers = 3;
-	Teller* tellers[numOfTellers];
+	Teller* tellers[NUM_TELLERS];
 	Queue* customerQueue;
 	bool open;
 	bool timerOn;
 	pthread_t thread;
+	TimerSys* timer;
 };
 
 #endif /* BANK_H_ */
