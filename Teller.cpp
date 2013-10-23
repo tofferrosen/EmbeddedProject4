@@ -31,13 +31,30 @@ Teller::~Teller() {/* Unused */}
  * 				until bank is closed AND there are no more customers Each
  * 				customer requires between 30 seconds and 7 minutes to
  * 				complete their transaction.
+ *
+ * 				Will take a break every 30 to 60 minutes for a duration of 1 to 4 minutes.
+ * 				Only occurs after the completion of customer transactions.
  */
 void Teller::helpCustomers(){
 	Customer *customer;
 	int timeReq, waitTimer = -1;
+	int breakTimer;
 
 	while( open || !customerQueue->empty() ){
 		int curTime;
+
+		// Set when next break should be
+		curTime = timer->readTimer();
+		breakTimer = (curTime - (((rand()%(25200-1800))+1800)/1800)*TIME_INCR);
+
+		// is it time for a break?
+		if(timer->readTimer() <= breakTimer){
+			int timeToTakeBreak = ((rand()%(240-60))+60)/30;
+			while(timer->readTimer() > (curTime-timeToTakeBreak*TIME_INCR)){
+							usleep(10);
+							sched_yield();
+			}
+		}
 
 		// Update Maximum Queue Depth:
 		metrics->updateMaxDepth(customerQueue->size());
