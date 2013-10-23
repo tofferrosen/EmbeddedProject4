@@ -11,16 +11,12 @@
 
 #include <Bank.h>
 
-static int bankOpenSec = 420;
 
-/**
- * Constructor
- * Initializes the customer queue and the tellers
- */
-Bank::Bank() {
+Bank::Bank(){
 	customerQueue = new Queue();
+	metrics = new Metrics();
 
-	// instantiate the tellers
+	// Instantiate the tellers:
 	for(int i = 0; i < numOfTellers; i++){
 		tellers[i] = new Teller(customerQueue,i+1);
 	}
@@ -50,17 +46,24 @@ void Bank::openAndRunBank(){
 	}
 
 	runTimer(); // start the timer
-	while(bankOpenSec > 0){
 
-		int newCustomerEntryTime = (rand()%(240-60))+60; // random # between 1 to 4 minutes in seconds
-		usleep(newCustomerEntryTime*1000);
-		printf("     GLOBAL TIME: %d\n", bankOpenSec);
+	while(true){
+		int newCustomerEntryTime = ((rand()%(240-60))+60); // random # between 1 to 4 minutes in sim seconds
+		//printf("----> Adding customer in: %d\n", newCustomerEntryTime);
 
-		// Add customer to queue!!
-		customerQueue->enqueue(new Customer(clock()));;
+		usleep((int)( newCustomerEntryTime * SIMULATED_SEC_SCALE ));
+		if(bankOpenSec > 0){
+			// Add customer to queue!!
+			Customer* c = new Customer(bankOpenSec);
+			//metrics->addCustomer(*c);
+			customerQueue->enqueue(c);
+			printf("\tGLOBAL TIME: %d\n", bankOpenSec);
+		}else{
+			printf("############# EXIT WHILE LOOP ###");
+			break;
+		}
 	}
-
-	printf("     AFTER WHILE\n");
+	printf("*************** CLOSE BANK *********");
 	closeBank();
 }
 
@@ -73,15 +76,31 @@ void Bank::stopTimer(){
  * Close the bank
  */
 void Bank::closeBank(){
-
 	for(int i = 0; i < numOfTellers; i++){
 		Teller *teller = tellers[i];
 		teller->stopWorking();
 	}
-
-	printf("Closing timer\n");
 	stopTimer();
-	printf("The bank has closed, we apologize for the inconvenience!");
+
+	printf("# ------------------------------------------------------------- #\n\
+			The fabulous bank has closed, we apologize for the inconvenience!\n\
+			# ------------------------------------------------------------- #\n\
+		Customers Serviced:\t%d\n\n\
+		Maximum Depth Of The Queue:\t%d\n\n\
+		Average Time In Queue:\t%f\n\
+		Maximum Time In Queue:\t%d\n\n\
+		Average Time At Teller:\t%f\n\
+		Maximum Time At Teller:\t%d\n\n\
+		Average Teller Wait Time:\t%f\n\
+		Maximum Teller Wait Time:\t%d\n\n",
+			metrics->getNumCustomers(),
+			metrics->getMaxDepth(),
+			metrics->getAvgCustWaitTime(),
+			metrics->getMaxCustWaitTime(),
+			metrics->getAvgServiceTime(),
+			metrics->getMaxServiceTime(),
+			metrics->getAvgTellerWaitTime(),
+			metrics->getMaxTellerWaitTime());
 }
 
 /*
@@ -90,19 +109,18 @@ void Bank::closeBank(){
 void Bank::timerDecrementer(){
 
 	while(timerOn == true){
-		usleep(100000);
-		//usleep(10000);
+		usleep((int)(SIMULATED_SEC_SCALE));
 		bankOpenSec--;
 	}
 }
 
 Bank::~Bank() {
-	// delete the tellers
+	// Delete the tellers
 	for(int i = 0; i < numOfTellers; i++){
 		delete(tellers[i]);
 	}
 
-	// delete the customer queue
+	// Delete the customer queue
 	delete(customerQueue);
-
+	delete(metrics);
 }

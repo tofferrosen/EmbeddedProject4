@@ -7,6 +7,7 @@
 
 #ifndef METRICS_H_
 #define METRICS_H_
+#include <pthread.h>
 #include "Customer.h"
 
 class Metrics {
@@ -22,11 +23,17 @@ public:
 
 	void addTellerWaitTime(int wt); // Add everytime a customer comes in
 
-	float getAvgCustWaitTime();
-	float getAvgServiceTime(); // average time with teller
 	int getNumCustomers();
+	int getMaxDepth();
+	float getAvgCustWaitTime();
+	int getMaxCustWaitTime();
+	float getAvgServiceTime(); // average time with teller
+	int getMaxServiceTime();
+	float getAvgTellerWaitTime();
+	int getMaxTellerWaitTime();
 
 private:
+	pthread_mutex_t mutex;
 	int totalCustWaitTime;
 	int maxCustWaitTime;
 

@@ -11,6 +11,7 @@
 #include <time.h>
 #include <customer.h>
 #include <teller.h>
+#include <Constants.h>
 
 /**
 * Constructor
@@ -36,22 +37,23 @@ void Teller::helpCustomers(){
 	Customer *customer;
 	int timeReq;
 
-	printf("Teller ready!");
+	//printf("Teller ready!");
 
 	while(open || !customerQueue->empty()){
 		customer = customerQueue->pop(); // get the next customer in the queue
 		// queue was empty
 		if(customer == NULL){
-			usleep(100);
+			usleep(1);
 		} else {
-			printf("  Teller %d is helping a customer\n",tellerNum);
+			//printf("  Teller %d is helping a customer\n",tellerNum);
 			timeReq = (rand()%(420-30))+30; // random # b/w 30seconds and 7 minutes (in sec)
-			usleep(timeReq*1000); // help customer
+			//printf("<----- helping customer for: %d\n", timeReq);
+			usleep((int)(timeReq*SIMULATED_SEC_SCALE)); // help customer
 			delete(customer); // done!
 		}
 	}
     done = true; // bank is closed and the customer queue is empty.
-    printf("Teller %d is finished\n", tellerNum);
+    //printf("Teller %d is finished\n", tellerNum);
 
 }
 
@@ -76,7 +78,7 @@ void Teller::startWorking() {
  **/
 void Teller::stopWorking() {
 	open = false;
-	printf("  Teller %d is finishing\n", tellerNum);
-    while(!done){usleep(100);} // wait until customer queue is empty
+	//printf("  Teller %d is finishing\n", tellerNum);
+    while(!done){usleep(1);} // wait until customer queue is empty
     pthread_join(thread,NULL);
 }

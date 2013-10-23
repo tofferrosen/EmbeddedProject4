@@ -14,6 +14,8 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <pthread.h>
+#include <Metrics.h>
+#include <Constants.h>
 
 class Bank {
 public:
@@ -34,8 +36,7 @@ private:
 	bool open;
 	bool timerOn;
 	pthread_t thread;
-
-
+	Metrics* metrics;
 };
 
 #endif /* BANK_H_ */

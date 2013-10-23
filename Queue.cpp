@@ -28,7 +28,7 @@ Customer * Queue::pop() {
 
     // aquire lock mutex
     while(pthread_mutex_trylock(&mutex) != 0){
-    	usleep(100); // to not lock CPU
+    	usleep(1); // to not lock CPU
     }
 
     // make sure the container is not empty
@@ -36,8 +36,8 @@ Customer * Queue::pop() {
 		customer = NULL;
 	} else {
 		customer = container.front();
-		printf("                       pop from the queue\n");
-		printf("                       Size is now: %d\n", container.size());
+		//printf("                       pop from the queue\n");
+		//printf("                       Size is now: %d\n", container.size());
 		container.pop_front();
 	}
 
@@ -52,7 +52,7 @@ bool Queue::empty() {
 	bool empty = false;
 	// aquire lock mutex
 	while(pthread_mutex_trylock(&mutex) != 0){
-		usleep(100); // to not lock CPU
+		usleep(1); // to not lock CPU
 	}
 	empty = container.empty();
 	pthread_mutex_unlock(&mutex);  // release mutex
@@ -66,9 +66,9 @@ void Queue::enqueue(Customer *customer){
 
 	// aquire lock mutex
 	while(pthread_mutex_trylock(&mutex) != 0){
-		usleep(100); // to not lock CPU
+		usleep(1); // to not lock CPU
 	}
-	printf("A new customer has entered!\n");
+	//printf("A new customer has entered!\n");
     container.push_back(customer);
     pthread_mutex_unlock(&mutex);
 }
