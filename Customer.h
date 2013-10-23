@@ -1,10 +1,6 @@
 /*
  * Customer.h
- *
- *	Customer holds metrics about itself
- *	Customer
- *  Created on: Oct 16, 2013
- *      Author: cbr4830
+ * Customer holds metrics about itself
  */
 
 #ifndef CUSTOMER_H_

@@ -1,15 +1,14 @@
 /**
  * Constants.h
  *
- * Created on: Oct 22, 2013
- * Author: cbr4830
+ * Defines all the constants in the program.
  */
 
 #ifndef CONSTANTS_H_
 #define CONSTANTS_H_
 
 // Seven hours in seconds:
-const int WORK_DAY = 1300;//25200;
+const int WORK_DAY = 25200;
 
 // One second in microseconds:
 const float ONE_SECOND = 1000000;

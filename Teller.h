@@ -4,8 +4,6 @@
  * The Teller object services customers--serves as a thread-safe
  * wrapper for removing objects from the customer queue.
  *
- * Created on: Oct 16, 2013
- * Author: cbr4830, lgs8331
  */
 
 #ifndef TELLER_H_
@@ -22,6 +20,9 @@
 #include "Constants.h"
 #include "Customer.h"
 #include "TimerSys.h"
+#include "Metrics.h"
+extern Metrics* metrics;
+
 
 class Teller {
 public:

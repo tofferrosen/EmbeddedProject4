@@ -6,6 +6,7 @@
  * Created on: Oct 16, 2013
  * Author: cbr4830, lgs8331
  */
+
 // Standard Library Headers:
 #include <cstdlib>
 #include <stdio.h>
@@ -31,7 +32,7 @@ int main(int argc, char *argv[]) {
 	// Declare Metrics Aggregator:
 	metrics = new Metrics();
 
-	// Create & Open Bank:
+	// Create & Open Bank & Run the bank:
 	Bank *bank = new Bank(timer);
 	bank->openAndRunBank();
 

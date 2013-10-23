@@ -1,16 +1,20 @@
 /**
  * Bank.cpp
  *
- * The simulation time is scaled such that 100 milliseconds of absolute clock time
- * represents 1 minute of simulation clock time.
- * Open between 9:00am to 4:00pm - so open for 7 hours
+ * Represents the bank
  *
- * Created on: Oct 16, 2013
- * Author: cbr4830
+ * Starts and stops the tellers, and while the bank is open
+ * constantly adds customers every 1 to 4 minutes.
  */
 
 #include "Bank.h"
 
+/**
+ * Function: Constructor
+ * Description: Instantiates the customer queue and tellers.
+ *
+ * @param t A ptr to the system timer.
+ */
 Bank::Bank(TimerSys* t){
 	// Store Reference To Timer:
 	timer = t;
@@ -25,80 +29,43 @@ Bank::Bank(TimerSys* t){
 }
 
 /**
- * Opens the bank, starts running the global timer, and
- * adds customers to queue.
+ * Function: openAndRunBank()
+ * Description: Opens the bank, starts running the global timer, and
+ * 				adds customers to queue while bank is open. When bank is
+ * 				operating hours end, closes the bank.
  */
 void Bank::openAndRunBank(){
-
-	printf("This fabulous bank has opened!\n");
-
-	// Is Empty:
-	customerQueue->printQueue();
-	printf("Is Empty? %d\n", customerQueue->empty());
-	// Has 1 Element:
-	customerQueue->enqueue(new Customer(100));
-	customerQueue->printQueue();
-
-	// Has 3 Elements:
-	customerQueue->enqueue(new Customer(200));
-	customerQueue->enqueue(new Customer(300));
-	customerQueue->printQueue();
-
-	// Dequeue 1:
-	customerQueue->pop();
-	customerQueue->printQueue();
-
-	// Dequeue All:
-	customerQueue->pop();
-	customerQueue->pop();
-	customerQueue->printQueue();
-
-	// Dequeue While Empty:
-	customerQueue->pop();
-	customerQueue->printQueue();
+	printf("This #Fabulous bank has opened!\n\n");
 
 	for(int i = 0; i < NUM_TELLERS; i++){
 		Teller *teller = tellers[i];
 		teller->startWorking();
 	}
-	timer->startTimer(); // start the timer
-	// Has 3 Elements:
-	customerQueue->enqueue(new Customer(timer->readTimer()));
-	customerQueue->enqueue(new Customer(timer->readTimer()));
-	customerQueue->enqueue(new Customer(timer->readTimer()));
-	usleep(100000);
-	customerQueue->enqueue(new Customer(timer->readTimer()));
+	// Start the timer
+	timer->startTimer();
 
 	while(timer->isRunning()){
-		sched_yield();
+		int newCustomerEntryTime = (((rand()%(240-60))+60)/30);
+		int curTime = timer->readTimer();
+
+		while(timer->readTimer() > (curTime-newCustomerEntryTime*TIME_INCR)){
+			usleep(10);
+			sched_yield();
+		}
+		customerQueue->enqueue(new Customer(timer->readTimer()));
 	}
 
 	// Close Bank:
 	closeBank();
-
-	/*
-	while(true){
-		int newCustomerEntryTime = ((rand()%(240-60))+60); // random # between 1 to 4 minutes in sim seconds
-		printf("----> Adding customer in: %d\n", newCustomerEntryTime);
-
-		usleep((int)( newCustomerEntryTime * SIMULATED_SEC_SCALE ));
-		if(bankOpenSec > 0){
-			// Add customer to queue!!
-			Customer* c = new Customer(bankOpenSec);
-			customerQueue->enqueue(c);
-			//printf("^*^ Queue Size %d\n",customerQueue->size());
-		}else{
-			break;
-		}
-	}*/
-	//closeBank();
 }
 
 /**
- * Close the bank
+ * Function: closeBank()
+ * Description: Closes the bank by first telling the tellers to finish the remaining
+ * 				customers in the queue and clean themselves up. Then, it stops the timer.
  */
 void Bank::closeBank(){
-	// Dismiss all Telemarketers:
+	// Dismiss all tellers
 	for(int i = 0; i < NUM_TELLERS; i++){
 		Teller *teller = tellers[i];
 		teller->stopWorking();
@@ -124,7 +91,10 @@ void Bank::closeBank(){
 	printf("# -------------------------------------------- #\n");
 }
 
-
+/**
+ * Function: Destructor
+ * Description: Deletes the tellers and the customer queue and the metrics object upon desctruction.
+ */
 Bank::~Bank() {
 	// Delete the tellers
 	for(int i = 0; i < NUM_TELLERS; i++){

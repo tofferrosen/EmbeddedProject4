@@ -1,43 +1,44 @@
-//
-//  Queue.cpp
-//  Project4
-//
-//	Thread safe queue by requiring a mutex in order to read or write to it.
-//
-//  Created by Christoffer Rosen on 10/18/13.
-//  Copyright (c) 2013 Christoffer Rosen. All rights reserved.
-//
-
+/**
+ * Queue
+ * A thread safe queue.
+ *
+ * Wrapper around the std::deque with mutexes to ensure that only
+ * one thread can modify the container (deque) at the time.
+ */
 #include <Queue.h>
 
+/**
+ * Fucntion: Constructor
+ * Description: Initializes the mutex
+ */
 Queue::Queue() {
-	// Initialize Mutex:
 	pthread_mutex_init(&mutex, NULL);
 }
 
+/**
+ * Function: Deconstructor
+ * Description: Desctuctor
+ */
 Queue::~Queue() {
 	// TODO Auto-generated destructor stub
 }
 
 /**
- * Pops and returns pointer to first element in the queue.
- * IF the queue is empty, returns null ptr.
+ * Function: pop()
+ * Description: Pops and returns pointer to first element in the queue.
+ * 				IF the queue is empty, returns null ptr.
+ *
+ * @threadsafe
  */
 Customer * Queue::pop() {
 	Customer *customer;
 
-    // acquire lock mutex
-    /*while(pthread_mutex_trylock(&mutex) != 0){
-    	sched_yield(); // to not lock CPU
-    }*/
 	pthread_mutex_lock(&mutex);
     // make sure the container is not empty
 	if (container.empty()){
 		customer = NULL;
 	} else {
 		customer = container.front();
-		//printf("                       pop from the queue\n");
-		//printf("                       Size is now: %d\n", container.size());
 		container.pop_front();
 	}
 
@@ -45,11 +46,14 @@ Customer * Queue::pop() {
 	return customer;
 }
 
+/**
+ * Function: printQueue()
+ * Description: Prints the contents of the queue.
+ * 				Used for *testing* purposes only.
+ *
+ * @threadsafe
+ */
 void Queue::printQueue() {
-	// aquire lock mutex
-	/*while(pthread_mutex_trylock(&mutex) != 0){
-		sched_yield(); // to not lock CPU
-	}*/
 	pthread_mutex_lock(&mutex);
 	printf("Queue: ");
 	for(unsigned int i = 0; i < container.size(); i++){
@@ -59,14 +63,15 @@ void Queue::printQueue() {
 	printf("\n");
 	pthread_mutex_unlock(&mutex);  // release mutex
 }
+
 /**
- * Returns true if queue is empty
+ * Function: empty()
+ * Description: Checks if the queue is empty.
+ *
+ * @return bool true if queue is empty.
+ * @threadsafe
  */
 bool Queue::empty() {
-	// aquire lock mutex
-	/*while(pthread_mutex_trylock(&mutex) != 0){
-		sched_yield(); // to not lock CPU
-	}*/
 	pthread_mutex_lock(&mutex);
 	bool empty = false;
 	empty = container.empty();
@@ -75,7 +80,11 @@ bool Queue::empty() {
 }
 
 /**
- * Adds customer to the end of the queue.
+ * Function: enqueue()
+ * Description: Enqueues a customer to the queue.
+ * @param *customer: A ptr to the customer to be added.
+ *
+ * @threadsafe
  */
 void Queue::enqueue(Customer *customer){
 
@@ -91,14 +100,13 @@ void Queue::enqueue(Customer *customer){
 }
 
 /**
- * Get size of the container
+ * Function: size()
+ * Description: Checks the size of the queue.
+ * @return int Size of the queue
+ * @threadsafe
  **/
 int Queue::size(){
-	// aquire lock mutex
 	int size;
-	/*while(pthread_mutex_trylock(&mutex) != 0){
-		sched_yield(); // to not lock CPU
-	}*/
 	pthread_mutex_lock(&mutex);
 	size = container.size();
     pthread_mutex_unlock(&mutex);

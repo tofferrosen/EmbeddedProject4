@@ -3,9 +3,6 @@
  *
  * Represents a Teller. Encapsulates a p-thread.
  * Services customers that enter the system.
- *
- * Created on: Oct 16, 2013
- * Author: cbr4830, lgs8331
  */
 
 #include <Teller.h>
@@ -53,22 +50,18 @@ void Teller::helpCustomers(){
 		if( customer == NULL ){
 			sched_yield();
 		}else{
-			//timeReq = (rand()%(420-30))+30; // random # b/w 30seconds and 7 minutes (in sec)
-			timeReq = 5; // Five Simulation Seconds;
-
+			timeReq = ((rand()%(420-30))+30)/30; // random # b/w 30seconds and 7 minutes (in sec)
 			metrics->addTellerWaitTime( waitTimer - (timer->readTimer()) );
-
 			curTime = timer->readTimer();
 			customer->setTellerTime(curTime);
 			customer->setCustomerDone(curTime - (timeReq*TIME_INCR));
 
-			printf("Teller #%d: Begin Servicing Customer(@%d.).\n",tellerNum,curTime);
 			while(timer->readTimer() > (curTime-timeReq*TIME_INCR)){
 				usleep(10);
 				sched_yield();
 			}
 			metrics->addCustomer(*customer);
-			printf("Teller #%d: Completed Servicing Customer (%d)(%d).\n",tellerNum,customer->getWaitTime(),customer->getServiceTime());
+
 			// Log Customer Data in Aggregator:
 			waitTimer = -1;
 			delete(customer);
@@ -85,7 +78,6 @@ void Teller::helpCustomers(){
  */
 void Teller::startWorking() {
 	open = true;done = false;
-	printf("Teller #%d punched into work.\n", tellerNum);
 	int rc = pthread_create(&thread, NULL, TellerRunFunction,this);
 	rc = pthread_setname_np(thread, "Teller #"+tellerNum);
 	sched_yield();
@@ -101,7 +93,6 @@ void Teller::startWorking() {
  **/
 void Teller::stopWorking() {
 	open = false;
-	printf("  Teller %d is finishing\n", tellerNum);
     while(!done){sched_yield();} // wait until customer queue is empty
     pthread_join(thread,NULL);
 }// stopWorking()
